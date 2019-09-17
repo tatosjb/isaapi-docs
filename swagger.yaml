@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: API para integrar o ISA-ERP com o mundo
-  version: 1.0.0
+  version: 0.0.1
   title: ISA-API
   contact:
     email: altair@asseinfo.com.br
