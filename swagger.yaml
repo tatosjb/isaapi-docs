@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: API para integrar o ISA-ERP com o mundo
-  version: 0.0.1
+  version: 1.0.0
   title: ISA-API
   contact:
     email: altair@asseinfo.com.br
@@ -142,11 +142,12 @@ paths:
           description: token de identificação do usuário (SHA256)
           required: true
         - in: query
-          name: pagina
-          description: Número dá página
-          type: integer
+          name: ecommerce
+          description: informe true se quiser somente os itens de ecommerce
+          default: false
+          type: boolean
           format: int32
-          minimum: 1
+          minimum: 0
         - in: query
           name: limite
           description: quantidade máxima que pode ser retornada
@@ -154,6 +155,12 @@ paths:
           format: int32
           minimum: 1
           maximum: 200
+        - in: query
+          name: pagina
+          description: Número da página
+          type: integer
+          format: int32
+          minimum: 1
       responses:
         200:
           description: search results matching criteria
