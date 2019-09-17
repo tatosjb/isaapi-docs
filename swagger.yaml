@@ -106,14 +106,7 @@ paths:
         200:
           description: search results matching criteria
           schema:
-            type: object
-            properties:
-              meta:
-                $ref: "#/definitions/MetaInfo"
-              produtos:
-                type: array
-                items:
-                  $ref: "#/definitions/StockProperties"
+            $ref: "#/definitions/StockProperties"
         401:
           description: X-TOKEN-API-KEY inválido
           schema:
@@ -122,7 +115,6 @@ paths:
           description: Quando o registro não foi encontrado
           schema:
             $ref: "#/definitions/RecordNotFound"
-
   /api/v1/produtos:
     get:
       tags:
@@ -141,6 +133,11 @@ paths:
           maxLength: 64
           description: token de identificação do usuário (SHA256)
           required: true
+        - in: query
+          name: desde
+          description: data no formato padrão do JSON (ISO9601)
+          type: string
+          format: ISO9601
         - in: query
           name: ecommerce
           description: informe true se quiser somente os itens de ecommerce
@@ -170,7 +167,9 @@ paths:
               meta:
                 $ref: "#/definitions/MetaInfo"
               produtos:
-                $ref: "#/definitions/ProductProperties"
+                type: array
+                items:
+                  $ref: "#/definitions/ProductProperties"
         401:
           description: X-TOKEN-API-KEY inválido
           schema:
@@ -179,7 +178,6 @@ paths:
           description: search results matching criteria
           schema:
             $ref: "#/definitions/InvalidPage"
-
   /api/v1/produtos/{codigo_ou_referencia}/{identificador}:
     get:
       tags:
@@ -211,14 +209,7 @@ paths:
         200:
           description: search results matching criteria
           schema:
-            type: object
-            properties:
-              meta:
-                $ref: "#/definitions/MetaInfo"
-              produtos:
-                type: array
-                items:
-                  $ref: "#/definitions/ProductProperties"
+            $ref: "#/definitions/ProductProperties"
         401:
           description: X-TOKEN-API-KEY inválido
           schema:
@@ -227,7 +218,6 @@ paths:
           description: Quando o registro não foi encontrado
           schema:
             $ref: "#/definitions/RecordNotFound"
-
 definitions:
   InvalidValue:
     type: object
