@@ -222,7 +222,7 @@ definitions:
   InvalidValue:
     type: object
     properties:
-      errors:
+      erros:
         type: array
         items:
           type: object
@@ -239,7 +239,7 @@ definitions:
   RecordNotFound:
     type: object
     properties:
-      error:
+      erro:
         type: string
         example: "Registro não encontrado"
   AuthenticationError:
@@ -322,7 +322,7 @@ definitions:
   InvalidPage:
     type: object
     properties:
-      errors:
+      erros:
         type: array
         items:
           type: object
