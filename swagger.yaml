@@ -1,120 +1,341 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: '1.0'
-  title: "isaapi"
-  description: Polls is a simple API allowing consumers to view polls and vote in them.
+  description: API para integrar o ISA-ERP com o mundo
+  version: 1.0.0
+  title: ISA-API
+  contact:
+    email: altair@asseinfo.com.br
+
   license:
-    name: MIT
-    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
-host: polls.apiblueprint.org
-basePath: /
-schemes:
-- http
-consumes:
-- application/json
-produces:
-- application/json
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Estoque
+    description: Chamadas para operações de estoque
+  - name: Produtos
+    description: Chamadas para operações de produtos
+
 paths:
-  /questions:
-    x-summary: Questions Collection
+  /api/v1/estoque:
     get:
-      summary: List All Questions
+      tags:
+        - Estoque
+      summary: retorna a quantidade em estoque
+      operationId: searchInventory
+      description: |
+        Neste endpoint você irá consultar os saldos de estoque que sofreram alteração desde a data/hora informada
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: X-TOKEN-API-KEY
+          type: string
+          minLength: 64
+          maxLength: 64
+          description: token de identificação do usuário (SHA256)
+          required: true
+        - in: query
+          name: desde
+          description: data no formato padrão do JSON (ISO9601)
+          required: true
+          type: string
+          format: ISO9601
+        - in: query
+          name: ecommerce
+          description: informe true se quiser somente os itens de ecommerce
+          default: false
+          type: boolean
+          format: int32
+          minimum: 0
+        - in: query
+          name: limite
+          description: quantidade máxima que pode ser retornada
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 200
+        - in: query
+          name: pagina
+          description: número da página
+          type: integer
+          format: int32
       responses:
         200:
-          description: Successful Response
+          description: search results matching criteria
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Question'
-          examples:
-            application/json:
-              - question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 2048
-                  - choice: Python
-                    votes: 1024
-                  - choice: Objective-C
-                    votes: 512
-                  - choice: Ruby
-                    votes: 256
-    post:
-      description: >-
-        You may create your own question using this action. It takes a JSON
-        object containing a question and a collection of answers in the
-        form of choices.
-      summary: Create a New Question
+            type: object
+            properties:
+              meta:
+                $ref: "#/definitions/MetaInfo"
+              produtos:
+                $ref: "#/definitions/StockProperties"
+
+        422:
+          description: search results matching criteria
+          schema:
+            $ref: "#/definitions/InvalidValue"
+  /api/v1/estoque/{codigo_ou_referencia}/{identificador}:
+    get:
+      tags:
+        - Estoque
+      summary: retorna a quantidade em estoque
+      operationId: searchInventoryID
+      description: |
+        Neste endpoint você irá consultar o saldo em estoque do produto solicitado
+      produces:
+        - application/json
       parameters:
-        - name: body
-          in: body
+        - in: header
+          name: X-TOKEN-API-KEY
+          type: string
+          description: token de identificação do usuário (SHA256)
           required: true
-          schema:
-            $ref: '#/definitions/QuestionRequest'
+        - in: path
+          name: codigo_ou_referencia
+          required: true
+          type: string
+          enum: [prod_codigo, prod_referencia]
+          description: campo utilizado como identificador
+        - in: path
+          name: identificador
+          required: true
+          type: string
+          description: código de identificação do produto
       responses:
-        201:
-          description: ''
+        200:
+          description: search results matching criteria
           schema:
-            $ref: '#/definitions/Question'
-          examples:
-            application/json:
-                question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 0
-                  - choice: Python
-                    votes: 0
-                  - choice: Objective-C
-                    votes: 0
-                  - choice: Ruby
-                    votes: 0
+            type: object
+            properties:
+              meta:
+                $ref: "#/definitions/MetaInfo"
+              produtos:
+                type: array
+                items:
+                  $ref: "#/definitions/StockProperties"
+        401:
+          description: X-TOKEN-API-KEY inválido
+          schema:
+            $ref: "#/definitions/AuthenticationError"
+        404:
+          description: Quando o registro não foi encontrado
+          schema:
+            $ref: "#/definitions/RecordNotFound"
+
+  /api/v1/produtos:
+    get:
+      tags:
+        - Produtos
+      summary: retorna os produtos
+      operationId: searchProducts
+      description: |
+        Neste endpoint você irá consultar uma lista de produtos
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: X-TOKEN-API-KEY
+          type: string
+          minLength: 64
+          maxLength: 64
+          description: token de identificação do usuário (SHA256)
+          required: true
+        - in: query
+          name: pagina
+          description: Número dá página
+          type: integer
+          format: int32
+          minimum: 1
+        - in: query
+          name: limite
+          description: quantidade máxima que pode ser retornada
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 200
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: "#/definitions/MetaInfo"
+              produtos:
+                $ref: "#/definitions/ProductProperties"
+        401:
+          description: X-TOKEN-API-KEY inválido
+          schema:
+            $ref: "#/definitions/AuthenticationError"
+        422:
+          description: search results matching criteria
+          schema:
+            $ref: "#/definitions/InvalidPage"
+
+  /api/v1/produtos/{codigo_ou_referencia}/{identificador}:
+    get:
+      tags:
+        - Produtos
+      summary: retorna um produto
+      operationId: searchProduct
+      description: |
+        Neste endpoint você irá consultar os dados de um produto
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: X-TOKEN-API-KEY
+          type: string
+          description: token de identificação do usuário (SHA256)
+          required: true
+        - in: path
+          name: codigo_ou_referencia
+          required: true
+          type: string
+          enum: [prod_codigo, prod_referencia]
+          description: campo utilizado como identificador
+        - in: path
+          name: identificador
+          required: true
+          type: string
+          description: código de identificação do produto
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: "#/definitions/MetaInfo"
+              produtos:
+                type: array
+                items:
+                  $ref: "#/definitions/ProductProperties"
+        401:
+          description: X-TOKEN-API-KEY inválido
+          schema:
+            $ref: "#/definitions/AuthenticationError"
+        404:
+          description: Quando o registro não foi encontrado
+          schema:
+            $ref: "#/definitions/RecordNotFound"
+
 definitions:
-  Question:
-    title: Question
+  InvalidValue:
     type: object
     properties:
-      question:
-        type: string
-      published_at:
-        type: string
-      choices:
+      errors:
         type: array
         items:
-          $ref: '#/definitions/Choice'
-    required:
-      - question
-      - published_at
-      - choices
-  Choice:
-    title: Choice
+          type: object
+          properties:
+            msg:
+              type: string
+              example: "Invalid value"
+            param:
+              type: string
+              example: "desde"
+            location:
+              type: string
+              example: "body"
+  RecordNotFound:
     type: object
     properties:
-      votes:
-        type: integer
-        format: int32
-      choice:
+      error:
         type: string
-    required:
-      - votes
-      - choice
-  QuestionRequest:
-    title: Question Request
+        example: "Registro não encontrado"
+  AuthenticationError:
     type: object
     properties:
-      question:
-        type: string
-      choices:
+      erro:
         type: array
         items:
           type: string
-    required:
-      - question
-      - choices
-    example:
-      question: Favourite programming language?
-      choices:
-        - Swift
-        - Python
-        - Objective-C
-        - Ruby
+          example: Você precisa informar um X-TOKEN-API-KEY válido
+  StockProperties:
+    type: object
+    properties:
+      prod_codigo:
+        type: integer
+        format: int32
+        example: 30
+      prod_referencia:
+        type: string
+        example: 30
+      dep_codigo:
+        type: integer
+        format: int32
+        example: 1
+      estoque:
+        type: number
+        format: float
+        example: 18.5
+  MetaInfo:
+    type: object
+    properties:
+      quantidadeDePaginas:
+        type: integer
+        example: 1
+      itensPorPagina:
+        type: integer
+        example: 20
+  ProductProperties:
+    type: object
+    properties:
+      prod_codigo:
+        type: integer
+        format: int32
+        example: 30
+      prod_referencia:
+        type: string
+        example: 30
+      dep_codigo:
+        type: integer
+        format: int32
+        example: 1
+      prod_nome:
+        type: string
+        example: Camiseta lisa
+      preco:
+        type: number
+        format: float
+        example: 49.99
+      marc_nome:
+        type: string
+        example: DZARM
+      fab_nome:
+        type: string
+        example: Hering
+      prod_pesobruto:
+        type: number
+        format: float
+        example: 0.250
+      prod_pesoliquido:
+        type: number
+        format: float
+        example: 0.150
+      tip_nome:
+        type: string
+        example: VERÃO 2019/2020
+      prod_alt_tempo:
+        type: string
+        format: ISO9601
+        example: 2019-09-16T12:06:00.000Z
+  InvalidPage:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          type: object
+          properties:
+            msg:
+              type: string
+              example: "Invalid page"
+            param:
+              type: string
+              example: "pagina"
+            location:
+              type: string
+              example: "body"
