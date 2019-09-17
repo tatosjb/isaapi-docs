@@ -62,7 +62,7 @@ paths:
           format: int32
       responses:
         200:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             type: object
             properties:
@@ -72,7 +72,7 @@ paths:
                 $ref: "#/definitions/StockProperties"
 
         422:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             $ref: "#/definitions/InvalidValue"
   /api/v1/estoque/{codigo_ou_referencia}/{identificador}:
@@ -104,7 +104,7 @@ paths:
           description: código de identificação do produto
       responses:
         200:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             $ref: "#/definitions/StockProperties"
         401:
@@ -160,7 +160,7 @@ paths:
           minimum: 1
       responses:
         200:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             type: object
             properties:
@@ -175,7 +175,7 @@ paths:
           schema:
             $ref: "#/definitions/AuthenticationError"
         422:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             $ref: "#/definitions/InvalidPage"
   /api/v1/produtos/{codigo_ou_referencia}/{identificador}:
@@ -207,7 +207,7 @@ paths:
           description: código de identificação do produto
       responses:
         200:
-          description: search results matching criteria
+          description: resultado da request
           schema:
             $ref: "#/definitions/ProductProperties"
         401:
