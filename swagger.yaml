@@ -75,7 +75,7 @@ paths:
           description: resultado da request
           schema:
             $ref: "#/definitions/InvalidValue"
-  /api/v1/estoque/{codigo_ou_referencia}/{identificador}:
+  /api/v1/estoque/{codigoOuReferencia}/{identificador}:
     get:
       tags:
         - Estoque
@@ -92,7 +92,7 @@ paths:
           description: token de identificação do usuário (SHA256)
           required: true
         - in: path
-          name: codigo_ou_referencia
+          name: codigoOuReferencia
           required: true
           type: string
           enum: [prod_codigo, prod_referencia]
@@ -115,6 +115,10 @@ paths:
           description: Quando o registro não foi encontrado
           schema:
             $ref: "#/definitions/RecordNotFound"
+        422:
+          description: Quando o parâmetro é inválido
+          schema:
+            $ref: "#/definitions/InvalidParameter"
   /api/v1/produtos:
     get:
       tags:
@@ -178,7 +182,7 @@ paths:
           description: resultado da request
           schema:
             $ref: "#/definitions/InvalidPage"
-  /api/v1/produtos/{codigo_ou_referencia}/{identificador}:
+  /api/v1/produtos/{codigoOuReferencia}/{identificador}:
     get:
       tags:
         - Produtos
@@ -195,7 +199,7 @@ paths:
           description: token de identificação do usuário (SHA256)
           required: true
         - in: path
-          name: codigo_ou_referencia
+          name: codigoOuReferencia
           required: true
           type: string
           enum: [prod_codigo, prod_referencia]
@@ -218,6 +222,10 @@ paths:
           description: Quando o registro não foi encontrado
           schema:
             $ref: "#/definitions/RecordNotFound"
+        422:
+          description: Quando o parâmetro é inválido
+          schema:
+            $ref: "#/definitions/InvalidParameter"
 definitions:
   InvalidValue:
     type: object
@@ -336,3 +344,23 @@ definitions:
             location:
               type: string
               example: "body"
+  InvalidParameter:
+    type: object
+    properties:
+      erros:
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: string
+              example: "prod_"
+            msg:
+              type: string
+              example: "Invalid value"
+            param:
+              type: string
+              example: "codigoOuReferencia"
+            location:
+              type: string
+              example: "params"
