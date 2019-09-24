@@ -106,7 +106,9 @@ paths:
         200:
           description: resultado da request
           schema:
-            $ref: "#/definitions/StockProperties"
+            type: array
+            items:
+              $ref: "#/definitions/StockProperties"
         401:
           description: X-TOKEN-API-KEY inválido
           schema:
