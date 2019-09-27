@@ -22,7 +22,6 @@ paths:
       tags:
         - Estoque
       summary: retorna a quantidade em estoque
-      operationId: searchInventory
       description: |
         Neste endpoint você irá consultar os saldos de estoque que sofreram alteração desde a data/hora informada
       produces:
@@ -80,7 +79,6 @@ paths:
       tags:
         - Estoque
       summary: retorna a quantidade em estoque
-      operationId: searchInventoryID
       description: |
         Neste endpoint você irá consultar o saldo em estoque do produto solicitado
       produces:
@@ -124,9 +122,8 @@ paths:
       tags:
         - Produtos
       summary: retorna os produtos
-      operationId: searchProducts
       description: |
-        Neste endpoint você irá consultar uma lista de produtos
+        Neste endpoint você irá consultar uma lista de produtos.
       produces:
         - application/json
       parameters:
@@ -162,6 +159,15 @@ paths:
           type: integer
           format: int32
           minimum: 1
+        - in: query
+          name: relacionados
+          description: |
+            Para obter dados de grupo, subgrupo, tipo, marca, fabricante, cor e/ou tamanho
+            você deve descrever isso no parâmetro **relacionados** como, por exemplo:
+            
+            **?relacionados=subgrupo,tipo,marca** separando cada tipo por uma vírgula
+          type: string
+          enum: [subgrupo, tipo, marca, fabricante, grupo, cor, tamanho]
       responses:
         200:
           description: resultado da request
@@ -187,7 +193,6 @@ paths:
       tags:
         - Produtos
       summary: retorna um produto
-      operationId: searchProduct
       description: |
         Neste endpoint você irá consultar os dados de um produto
       produces:
@@ -209,6 +214,15 @@ paths:
           required: true
           type: string
           description: código de identificação do produto
+        - in: query
+          name: relacionados
+          description: |
+            Para obter dados de grupo, subgrupo, tipo, marca, fabricante, cor e/ou tamanho
+            você deve descrever isso no parâmetro **relacionados** como, por exemplo:
+            
+            **?relacionados=subgrupo,tipo,marca** separando cada tipo por uma vírgula
+          type: string
+          enum: [subgrupo, tipo, marca, fabricante, grupo, cor, tamanho]
       responses:
         200:
           description: resultado da request
@@ -302,12 +316,6 @@ definitions:
         type: number
         format: float
         example: 49.99
-      marc_nome:
-        type: string
-        example: DZARM
-      fab_nome:
-        type: string
-        example: Hering
       prod_pesobruto:
         type: number
         format: float
@@ -316,13 +324,73 @@ definitions:
         type: number
         format: float
         example: 0.150
-      tip_nome:
-        type: string
-        example: VERÃO 2019/2020
       prod_alt_tempo:
         type: string
         format: ISO9601
         example: 2019-09-16T12:06:00.000Z
+      tipo:
+        type: object
+        properties:
+          tip_codigo:
+            type: integer
+            example: 1
+          tip_nome:
+            type: string
+            example: VERÃO 2019/2020
+      marca:
+        type: object
+        properties:
+          marc_codigo:
+            type: integer
+            example: 1
+          marc_nome:
+            type: string
+            example: DZARM
+      fabricante:
+        type: object
+        properties:
+          fab_codigo:
+            type: integer
+            example: 1
+          fab_nome:
+            type: string
+            example: Hering
+      grupo:
+        type: object
+        properties:
+          grup_codigo:
+            type: integer
+            example: 1
+          grup_nome:
+            type: string
+            example: Vestuário
+      subgrupo:
+        type: object
+        properties:
+          subg_codigo:
+            type: integer
+            example: 1
+          subg_nome:
+            type: string
+            example: Camisetas
+      cor:
+        type: object
+        properties:
+          cor_codigo:
+            type: integer
+            example: 1
+          cor_nome:
+            type: string
+            example: Malhada
+      tamanho:
+        type: object
+        properties:
+          tam_codigo:
+            type: string
+            example: XGG
+          tam_nome:
+            type: string
+            example: Extra grande
   InvalidPage:
     type: object
     properties:
